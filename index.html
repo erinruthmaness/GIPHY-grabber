@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>GIPHY Grabber</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+
+<body>
+    <div class="container">
+        <div id="buttons" class="row"></div>
+        <div id="row">
+            <div id="gif-display" class="col-8"></div>
+            <div class="col-3">
+                <form id="add-form">
+                    <label for="category-input">Add a category</label>
+                    <input type="text" id="cat-input"><br>
+
+                    <!-- Button triggers new category to be added -->
+                    <input id="add-cat" type="submit" value="Add a category" class="m-1">
+                </form>
+            </div>
+        </div>
+
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript">
+
+        var categories = ["Good Omens", "Doctor Who", "Boy Meets World", "Jane the Virgin"]
+
+        function renderButtons() {
+            $("#buttons").empty();
+            categories.forEach(function (arrayCat) {
+                $("<button>").addClass("category m-1").attr("data-name", arrayCat).text(arrayCat).appendTo("#buttons");
+
+            })
+
+        }
+
+        $("#add-cat").on("click", function (event) {
+            event.preventDefault();
+
+            categories.push($("#cat-input").val().trim())
+            renderButtons();
+            $("#cat-input").val("");
+
+        })
+
+        renderButtons();
+
+    </script>
+</body>
+
+</html>
