@@ -48,6 +48,8 @@
             var buttonCat = $(this).attr("data-name");
             console.log(buttonCat);
             urlArray = [];
+            urlArrayFixed = [];
+
             $.ajax({
                 url: "https://api.giphy.com/v1/gifs/search?api_key=134ChE1lsG0GWFuCyL3vzQ3LSUu8gtQ7&limit=10&rating=PG13&q=" + buttonCat,
                 method: "GET"
@@ -57,30 +59,31 @@
                 console.log(response);
                 $("#gif-display").empty();
                 for (var j = 0; j < response.data.length; j++) {
+                    //logs the still and moving URLs from GIPHY
                     var fixedUrl = response.data[j].images.fixed_width_still.url;
-                    var newImg = $("<img>").attr("src", fixedUrl);
                     urlArrayFixed.push(fixedUrl);
                     urlArray.push(response.data[j].images.fixed_width.url)
-                    newImg.attr("data-value", j);
-                    newImg.attr("alt", buttonCat + " gif from GIPHY").addClass("m-1 still-gif");
-                    newImg.appendTo("#gif-display");
+                    //builds img and adds attributes
+                    var newImg = $("<img>").attr("src", fixedUrl).attr("data-state", "still");
+                    newImg.attr("alt", buttonCat + " gif from GIPHY").addClass("m-1 still-gif").attr("data-value", j);
+                    //builds container DIV incl rating info
+                    var newDiv = $("<div>");
+                    newDiv.append(newImg).append($("<p>Rating: " + (response.data[j].rating) + "</p>"));
+                    //adds to the DOM
+                    newDiv.appendTo("#gif-display");
                 }
 
-                var stillImg = true;
-
                 $("#gif-display").on("click", ".still-gif", function (event) {
-                    if (stillImg === true) {
-                        var stillUrl = $(this).attr("src")
-                        var dataValue = $(this).attr("data-value");
-                        $(this).attr("src", urlArray[dataValue]);
-                        stillImg = false;
+                    var clickedImg = $(this);
+                    var dataValue = clickedImg.attr("data-value");
+                    console.log("click");
+
+                    if (clickedImg.attr("data-state") === "animate") {
+                        clickedImg.attr("src", urlArray[dataValue]).attr("data-state", "still");
                     }
 
-                    else if (stillImg === false) {
-                        var gifUrl = $(this).attr("src")
-                        var dataValue = $(this).attr("data-value");
-                        $(this).attr("src", urlArrayFixed[dataValue]);
-                        stillImg = true;
+                    else if (clickedImg.attr("data-state") === "still") {
+                        clickedImg.attr("src", urlArrayFixed[dataValue]).attr("data-state", "animate");
 
                     }
 
