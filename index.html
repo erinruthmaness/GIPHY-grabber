@@ -33,14 +33,39 @@
         var categories = ["Good Omens", "Doctor Who", "Boy Meets World", "Jane the Virgin"]
 
         function renderButtons() {
+            //makes everything in the array into a button
             $("#buttons").empty();
             categories.forEach(function (arrayCat) {
                 $("<button>").addClass("category m-1").attr("data-name", arrayCat).text(arrayCat).appendTo("#buttons");
-
             })
 
         }
 
+        function displayGIFs() {
+            //pulls GIFs from giphy using button parameters
+            var newCat = $(this).attr("data-name");
+            var queryURL = "https://api.giphy.com/v1/gifs/search?api_key=134ChE1lsG0GWFuCyL3vzQ3LSUu8gtQ7&limit=12&rating=PG13&q=" + newCat;
+
+            $.ajax({
+                url: queryURL,
+                method: "GET"
+            }).then(function (response) {
+
+                // YOUR CODE GOES HERE!!!
+                console.log(response);
+                for (var j = 0; j < response.data.length; j++) {
+                    var location = response.data[j].images.original.url;
+                    console.log(location);
+                    var newImg = $("<img>")
+                    newImg.attr("src", location);
+                    console.log(newImg);
+                    newImg.appendTo("#gif-display");
+                }
+            })
+
+        }
+
+        //lets user add new category buttons
         $("#add-cat").on("click", function (event) {
             event.preventDefault();
 
@@ -49,6 +74,10 @@
             $("#cat-input").val("");
 
         })
+
+        //clicking an existing button loads related gifs
+        $("#buttons").on("click", ".category", displayGIFs);
+
 
         renderButtons();
 
