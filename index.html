@@ -43,23 +43,15 @@
 
         function displayGIFs() {
             //pulls GIFs from giphy using button parameters
-            var newCat = $(this).attr("data-name");
-            var queryURL = "https://api.giphy.com/v1/gifs/search?api_key=134ChE1lsG0GWFuCyL3vzQ3LSUu8gtQ7&limit=12&rating=PG13&q=" + newCat;
-
             $.ajax({
-                url: queryURL,
+                url: "https://api.giphy.com/v1/gifs/search?api_key=134ChE1lsG0GWFuCyL3vzQ3LSUu8gtQ7&limit=12&rating=PG13&q=" + $(this).attr("data-name"),
                 method: "GET"
             }).then(function (response) {
 
-                // YOUR CODE GOES HERE!!!
+                //loops through the array of gifs pulled from GIPHY and displays them on the page
                 console.log(response);
                 for (var j = 0; j < response.data.length; j++) {
-                    var location = response.data[j].images.original.url;
-                    console.log(location);
-                    var newImg = $("<img>")
-                    newImg.attr("src", location);
-                    console.log(newImg);
-                    newImg.appendTo("#gif-display");
+                    $("<img>").attr("src", response.data[j].images.original.url).addClass("m-1").appendTo("#gif-display");
                 }
             })
 
