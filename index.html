@@ -47,9 +47,7 @@
             //pulls GIFs from giphy using button parameters
             var buttonCat = $(this).attr("data-name");
             console.log(buttonCat);
-            urlArray = [];
-            urlArrayFixed = [];
-
+            
             $.ajax({
                 url: "https://api.giphy.com/v1/gifs/search?api_key=134ChE1lsG0GWFuCyL3vzQ3LSUu8gtQ7&limit=10&rating=PG13&q=" + buttonCat,
                 method: "GET"
@@ -59,13 +57,11 @@
                 console.log(response);
                 $("#gif-display").empty();
                 for (var j = 0; j < response.data.length; j++) {
-                    //logs the still and moving URLs from GIPHY
-                    var fixedUrl = response.data[j].images.fixed_width_still.url;
-                    urlArrayFixed.push(fixedUrl);
-                    urlArray.push(response.data[j].images.fixed_width.url)
-                    //builds img and adds attributes
-                    var newImg = $("<img>").attr("src", fixedUrl).attr("data-state", "still");
-                    newImg.attr("alt", buttonCat + " gif from GIPHY").addClass("m-1 still-gif").attr("data-value", j);
+                    //builds img and adds attributes incl extra URLs for later
+                    var newImg = $("<img>").attr("src", response.data[j].images.fixed_width_still.url).attr("data-state", "still");
+                    newImg.attr("alt", buttonCat + " gif from GIPHY").addClass("m-1 still-gif");
+                    newImg.attr("data-animate", response.data[j].images.fixed_width.url);
+                    newImg.attr("data-still", response.data[j].images.fixed_width_still.url)
                     //builds container DIV incl rating info
                     var newDiv = $("<div>");
                     newDiv.append(newImg).append($("<p>Rating: " + (response.data[j].rating) + "</p>"));
@@ -73,25 +69,36 @@
                     newDiv.appendTo("#gif-display");
                 }
 
-                $("#gif-display").on("click", ".still-gif", function (event) {
-                    var clickedImg = $(this);
-                    var dataValue = clickedImg.attr("data-value");
-                    console.log("click");
-
-                    if (clickedImg.attr("data-state") === "animate") {
-                        clickedImg.attr("src", urlArray[dataValue]).attr("data-state", "still");
-                    }
-
-                    else if (clickedImg.attr("data-state") === "still") {
-                        clickedImg.attr("src", urlArrayFixed[dataValue]).attr("data-state", "animate");
-
-                    }
-
-                })
+                //when you click the button it checks the data state and replaces the URL
+               
 
             })
 
         }
+
+        $("#gif-display").on("click", ".still-gif", function (event) {
+                    var clickedImg = $(this);
+                    var animateSrc = clickedImg.attr("data-animate");
+                    var stillSrc = clickedImg.attr("data-still");
+                    console.log("test", clickedImg.attr("data-state"));
+
+                    if (clickedImg.attr("data-state") === "animate") {
+                        clickedImg.attr("src", stillSrc).attr("data-state", "still");
+                        console.log(clickedImg.attr("data-state"));
+
+                    }
+
+                    else  {
+                        clickedImg.attr("src", animateSrc).attr("data-state", "animate");
+                        console.log(clickedImg.attr("data-state"));
+
+                    }
+
+                    // else {
+                    //     console.log("huh?")
+                    // }
+
+                })
 
         //lets user add new category buttons
         $("#add-cat").on("click", function (event) {
