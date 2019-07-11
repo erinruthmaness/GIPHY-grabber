@@ -13,8 +13,8 @@
 <body>
     <div class="container">
         <div id="buttons" class="row"></div>
-        <div id="row">
-            <div id="gif-display" class="col-8"></div>
+        <div class="row">
+            <div id="gif-display" class="col-9"></div>
             <div class="col-3">
                 <form id="add-form">
                     <label for="category-input">Add a category</label>
@@ -31,6 +31,8 @@
     <script type="text/javascript">
 
         var categories = ["Good Omens", "Doctor Who", "Boy Meets World", "Jane the Virgin"]
+        var urlArray = [];
+        var urlArrayFixed = [];
 
         function renderButtons() {
             //makes everything in the array into a button
@@ -43,16 +45,47 @@
 
         function displayGIFs() {
             //pulls GIFs from giphy using button parameters
+            var buttonCat = $(this).attr("data-name");
+            console.log(buttonCat);
+            urlArray = [];
             $.ajax({
-                url: "https://api.giphy.com/v1/gifs/search?api_key=134ChE1lsG0GWFuCyL3vzQ3LSUu8gtQ7&limit=12&rating=PG13&q=" + $(this).attr("data-name"),
+                url: "https://api.giphy.com/v1/gifs/search?api_key=134ChE1lsG0GWFuCyL3vzQ3LSUu8gtQ7&limit=10&rating=PG13&q=" + buttonCat,
                 method: "GET"
             }).then(function (response) {
 
                 //loops through the array of gifs pulled from GIPHY and displays them on the page
                 console.log(response);
+                $("#gif-display").empty();
                 for (var j = 0; j < response.data.length; j++) {
-                    $("<img>").attr("src", response.data[j].images.original.url).addClass("m-1").appendTo("#gif-display");
+                    var fixedUrl = response.data[j].images.fixed_width_still.url;
+                    var newImg = $("<img>").attr("src", fixedUrl);
+                    urlArrayFixed.push(fixedUrl);
+                    urlArray.push(response.data[j].images.fixed_width.url)
+                    newImg.attr("data-value", j);
+                    newImg.attr("alt", buttonCat + " gif from GIPHY").addClass("m-1 still-gif");
+                    newImg.appendTo("#gif-display");
                 }
+
+                var stillImg = true;
+
+                $("#gif-display").on("click", ".still-gif", function (event) {
+                    if (stillImg === true) {
+                        var stillUrl = $(this).attr("src")
+                        var dataValue = $(this).attr("data-value");
+                        $(this).attr("src", urlArray[dataValue]);
+                        stillImg = false;
+                    }
+
+                    else if (stillImg === false) {
+                        var gifUrl = $(this).attr("src")
+                        var dataValue = $(this).attr("data-value");
+                        $(this).attr("src", urlArrayFixed[dataValue]);
+                        stillImg = true;
+
+                    }
+
+                })
+
             })
 
         }
@@ -72,6 +105,7 @@
 
 
         renderButtons();
+
 
     </script>
 </body>
