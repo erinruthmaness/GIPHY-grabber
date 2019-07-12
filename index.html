@@ -17,11 +17,12 @@
             <div id="buttons" class="col-8"></div>
             <div class="card col-4">
                 <form class="card-body" id="add-form">
-                    <h5 class="card-title" for="category-input">Add a category</h5>
+                    <h5 class="card-title" for="category-input">Add A Category:</h5>
                     <input type="text" id="cat-input"><br>
 
                     <!-- Button triggers new category to be added -->
-                    <input id="add-cat" type="submit" value="Add a category" class="m-1">
+                    <input id="add-cat" class="btn-success m-1" type="submit" value="Submit" class="m-1">                     
+                    <input id="clear-cat" class="btn-secondary m-1" type="submit" value="Clear" class="m-1">
                 </form>
             </div>
             <div class="row" id="gif-display"></div>
@@ -142,6 +143,11 @@
 
         })
 
+        //basically refreshes the page
+        $("#clear-cat").on("click", function (event) {
+            renderButtons();
+
+        })
         //clicking an existing button loads related gifs
         $("#buttons").on("click", ".category", displayGIFs);
 
