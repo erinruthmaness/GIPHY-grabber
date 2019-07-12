@@ -25,6 +25,8 @@
                 </form>
             </div>
             <div class="row" id="gif-display"></div>
+            <div class="row" id="more-gif-display"></div>
+
         </div>
 
     </div>
@@ -32,8 +34,6 @@
     <script type="text/javascript">
 
         var categories = ["Good Omens", "Doctor Who", "Star Trek", "Deep Space 9", "Boy Meets World", "Jane the Virgin"]
-        var urlArray = [];
-        var urlArrayFixed = [];
 
         function renderButtons() {
             //makes everything in the array into a button
@@ -42,6 +42,22 @@
                 $("<button>").addClass("category m-1 btn-danger").attr("data-name", arrayCat).text(arrayCat).appendTo("#buttons");
             })
 
+        }
+
+        function renderGIFs(response, j, divDisplay) {
+            for (var j; j < response.data.length; j++) {
+                //builds img and adds attributes incl extra URLs for later
+                var newImg = $("<img>").attr("src", response.data[j].images.fixed_width_still.url).attr("data-state", "still");
+                newImg.addClass("m-1 still-gif");
+                newImg.attr("data-animate", response.data[j].images.fixed_width.url);
+                newImg.attr("data-still", response.data[j].images.fixed_width_still.url)
+                //builds container DIV incl rating info
+                var newDiv = $("<div>");
+                newDiv.append(newImg).append($("<p>Rating: " + (response.data[j].rating.toUpperCase()) + "</p>"));
+                //adds to the DOM
+                newDiv.appendTo(divDisplay);
+
+            }
         }
 
         function displayGIFs() {
@@ -57,28 +73,36 @@
                 //loops through the array of gifs pulled from GIPHY and displays them on the page
                 console.log(response);
                 $("#gif-display").empty();
-                for (var j = 0; j < response.data.length; j++) {
-                    //builds img and adds attributes incl extra URLs for later
-                    var newImg = $("<img>").attr("src", response.data[j].images.fixed_width_still.url).attr("data-state", "still");
-                    newImg.attr("alt", buttonCat + " gif from GIPHY").addClass("m-1 still-gif");
-                    newImg.attr("data-animate", response.data[j].images.fixed_width.url);
-                    newImg.attr("data-still", response.data[j].images.fixed_width_still.url)
-                    //builds container DIV incl rating info
-                    var newDiv = $("<div>");
-                    newDiv.append(newImg).append($("<p>Rating: " + (response.data[j].rating.toUpperCase()) + "</p>"));
-                    //adds to the DOM
-                    newDiv.appendTo("#gif-display");
-                }
+                renderGIFs(response, 0, "#gif-display");
 
+
+                if (($("#gif-display").children().length) < 11) {
+                    var moreGifs = $("<button class='btn-danger' id='moregifs'>Load More...</button>").attr("data-cat", buttonCat);
+                    moreGifs.appendTo("#more-gif-display");
+
+                }
 
 
             })
 
         }
 
-        //when you click the button it checks the data state and replaces the URL
-        $("#gif-display").on("click", ".still-gif", function (event) {
-            var clickedImg = $(this);
+        function displayMoreGIFS(newButtonCat) {
+            console.log("inside " + newButtonCat);
+
+            $.ajax({
+                url: "https://api.giphy.com/v1/gifs/search?api_key=134ChE1lsG0GWFuCyL3vzQ3LSUu8gtQ7&limit=20&rating=PG13&q=" + newButtonCat,
+                method: "GET"
+            }).then(function (response) {
+                $("#more-gif-display").empty();
+                console.log(response);
+                renderGIFs(response, 10, "#more-gif-display");
+
+
+            })
+        }
+
+        function wiggleGIFs(clickedImg) {
             var animateSrc = clickedImg.attr("data-animate");
             var stillSrc = clickedImg.attr("data-still");
 
@@ -92,6 +116,18 @@
 
             }
 
+        }
+
+        //when you click the button it checks the data state and replaces the URL
+        $("#gif-display").on("click", ".still-gif", function (event) {
+            var clickedImg = $(this);
+            wiggleGIFs(clickedImg);
+
+        })
+
+        $("#more-gif-display").on("click", ".still-gif", function (event) {
+            var clickedImg = $(this);
+            wiggleGIFs(clickedImg);
 
         })
 
@@ -107,6 +143,13 @@
 
         //clicking an existing button loads related gifs
         $("#buttons").on("click", ".category", displayGIFs);
+
+        //clicking the More.. button loads ten more gifs
+        $("#more-gif-display").on("click", "#moregifs", function () {
+            var newButtonCat = ($(this).attr("data-cat"));
+            displayMoreGIFS(newButtonCat);
+        });
+
 
 
         renderButtons();
