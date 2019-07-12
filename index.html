@@ -33,7 +33,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script type="text/javascript">
 
-        var categories = ["Good Omens", "Doctor Who", "Star Trek", "Deep Space 9", "Boy Meets World", "Jane the Virgin"]
+        var categories = ["Good Omens", "Doctor Who", "Star Trek", "Deep Space 9", "Star Trek Discovery", "Boy Meets World", "Jane the Virgin", "Crazy Ex Girlfriend"]
 
         function renderButtons() {
             //makes everything in the array into a button
@@ -73,6 +73,7 @@
                 //loops through the array of gifs pulled from GIPHY and displays them on the page
                 console.log(response);
                 $("#gif-display").empty();
+                $("#more-gif-display").empty();
                 renderGIFs(response, 0, "#gif-display");
 
 
