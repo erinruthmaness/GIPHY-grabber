@@ -8,29 +8,30 @@
     <title>GIPHY Grabber</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
 </head>
 
 <body>
     <div class="container">
-        <div id="buttons" class="row"></div>
         <div class="row">
-            <div id="gif-display" class="col-9"></div>
-            <div class="col-3">
-                <form id="add-form">
-                    <label for="category-input">Add a category</label>
+            <div id="buttons" class="col-8"></div>
+            <div class="card col-4">
+                <form class="card-body" id="add-form">
+                    <h5 class="card-title" for="category-input">Add a category</h5>
                     <input type="text" id="cat-input"><br>
 
                     <!-- Button triggers new category to be added -->
                     <input id="add-cat" type="submit" value="Add a category" class="m-1">
                 </form>
             </div>
+            <div class="row" id="gif-display"></div>
         </div>
 
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script type="text/javascript">
 
-        var categories = ["Good Omens", "Doctor Who", "Boy Meets World", "Jane the Virgin"]
+        var categories = ["Good Omens", "Doctor Who", "Star Trek", "Deep Space 9", "Boy Meets World", "Jane the Virgin"]
         var urlArray = [];
         var urlArrayFixed = [];
 
@@ -38,7 +39,7 @@
             //makes everything in the array into a button
             $("#buttons").empty();
             categories.forEach(function (arrayCat) {
-                $("<button>").addClass("category m-1").attr("data-name", arrayCat).text(arrayCat).appendTo("#buttons");
+                $("<button>").addClass("category m-1 btn-danger").attr("data-name", arrayCat).text(arrayCat).appendTo("#buttons");
             })
 
         }
@@ -47,7 +48,7 @@
             //pulls GIFs from giphy using button parameters
             var buttonCat = $(this).attr("data-name");
             console.log(buttonCat);
-            
+
             $.ajax({
                 url: "https://api.giphy.com/v1/gifs/search?api_key=134ChE1lsG0GWFuCyL3vzQ3LSUu8gtQ7&limit=10&rating=PG13&q=" + buttonCat,
                 method: "GET"
@@ -64,41 +65,35 @@
                     newImg.attr("data-still", response.data[j].images.fixed_width_still.url)
                     //builds container DIV incl rating info
                     var newDiv = $("<div>");
-                    newDiv.append(newImg).append($("<p>Rating: " + (response.data[j].rating) + "</p>"));
+                    newDiv.append(newImg).append($("<p>Rating: " + (response.data[j].rating.toUpperCase()) + "</p>"));
                     //adds to the DOM
                     newDiv.appendTo("#gif-display");
                 }
 
-                //when you click the button it checks the data state and replaces the URL
-               
+
 
             })
 
         }
 
+        //when you click the button it checks the data state and replaces the URL
         $("#gif-display").on("click", ".still-gif", function (event) {
-                    var clickedImg = $(this);
-                    var animateSrc = clickedImg.attr("data-animate");
-                    var stillSrc = clickedImg.attr("data-still");
-                    console.log("test", clickedImg.attr("data-state"));
+            var clickedImg = $(this);
+            var animateSrc = clickedImg.attr("data-animate");
+            var stillSrc = clickedImg.attr("data-still");
 
-                    if (clickedImg.attr("data-state") === "animate") {
-                        clickedImg.attr("src", stillSrc).attr("data-state", "still");
-                        console.log(clickedImg.attr("data-state"));
+            if (clickedImg.attr("data-state") === "animate") {
+                clickedImg.attr("src", stillSrc).attr("data-state", "still");
 
-                    }
+            }
 
-                    else  {
-                        clickedImg.attr("src", animateSrc).attr("data-state", "animate");
-                        console.log(clickedImg.attr("data-state"));
+            else {
+                clickedImg.attr("src", animateSrc).attr("data-state", "animate");
 
-                    }
+            }
 
-                    // else {
-                    //     console.log("huh?")
-                    // }
 
-                })
+        })
 
         //lets user add new category buttons
         $("#add-cat").on("click", function (event) {
